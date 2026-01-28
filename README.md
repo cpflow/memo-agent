@@ -2,15 +2,35 @@
 
 A Claude Code plugin that helps investment analysts create professional investment memos from dataroom documents.
 
-## Quick Start
+## Installation
 
-### 1. Install Dependencies
+### Option 1: Install via Claude Code CLI (recommended)
 
 ```bash
-pip install -r requirements.txt
+claude plugins install cpflow/memo-agent
 ```
 
-### 2. Sync Your Dataroom
+Then install Python dependencies:
+
+```bash
+pip install -r ~/.claude/plugins/memo-agent/requirements.txt
+```
+
+### Option 2: Manual installation
+
+```bash
+# Clone the repository
+git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
+
+# Install Python dependencies
+pip install -r ~/.claude/plugins/memo-agent/requirements.txt
+```
+
+After installation, restart Claude Code. The `/memo` command will be available.
+
+## Quick Start
+
+### 1. Sync Your Dataroom
 
 Use rclone or manually copy your dataroom documents to a local folder:
 
@@ -21,7 +41,7 @@ rclone sync dropbox:Datarooms/AcmeCorp ./dataroom/
 # Or just copy/paste files into a folder
 ```
 
-### 3. Create a Memo
+### 2. Create a Memo
 
 ```bash
 /memo ./dataroom/
@@ -146,6 +166,18 @@ output/[DealName]-Memo.docx
 
 ## Requirements
 
+- [Claude Code CLI](https://claude.ai/code) installed and configured
 - Python 3.9+
-- Claude Code CLI
-- Dependencies: `pdfplumber`, `python-docx`, `openpyxl`
+- Python packages (installed automatically): `pdfplumber`, `python-docx`, `openpyxl`
+
+## Troubleshooting
+
+**Command `/memo` not found:**
+- Make sure the plugin is installed: `claude plugins list`
+- Restart Claude Code after installation
+
+**PDF extraction errors:**
+- Run `pip install pdfplumber` to ensure dependencies are installed
+
+**Permission errors:**
+- Check that you have read access to the dataroom folder
