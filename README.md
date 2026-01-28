@@ -37,26 +37,20 @@ You'll need **git** installed. Check with `git --version`. If not installed:
 - **Windows:** Download from [git-scm.com](https://git-scm.com/download/win)
 - **Linux:** `sudo apt install git`
 
-Clone the plugin to your Claude Code plugins directory:
+**Clone the plugin** to any location you prefer:
 
 **macOS/Linux:**
 ```bash
-git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
+git clone https://github.com/cpflow/memo-agent ~/memo-agent
 ```
 
 **Windows (PowerShell):**
 ```powershell
-git clone https://github.com/cpflow/memo-agent $env:USERPROFILE\.claude\plugins\memo-agent
+git clone https://github.com/cpflow/memo-agent $env:USERPROFILE\memo-agent
 ```
 
-Then install the Python dependencies:
+**Install Python dependencies:**
 
-**macOS/Linux:**
-```bash
-pip install pdfplumber python-docx openpyxl
-```
-
-**Windows (Command Prompt or PowerShell):**
 ```bash
 pip install pdfplumber python-docx openpyxl
 ```
@@ -70,14 +64,21 @@ You can run this command from any directory.
    - Use rclone: `rclone sync dropbox:Datarooms/AcmeCorp ./my-dataroom/`
    - Just drag and drop files into a folder
 
-2. **Open Claude Code** from any directory:
+2. **Open Claude Code with the plugin loaded:**
+
+   **macOS/Linux:**
    ```bash
-   claude
+   claude --plugin-dir ~/memo-agent
+   ```
+
+   **Windows (PowerShell):**
+   ```powershell
+   claude --plugin-dir $env:USERPROFILE\memo-agent
    ```
 
 3. **Run the memo command** with the path to your documents:
    ```
-   /memo ./my-dataroom/
+   /memo-agent:memo ./my-dataroom/
    ```
 
 4. **Follow the prompts.** The plugin will:
@@ -97,10 +98,15 @@ You can run this command from any directory.
 
 ## Usage
 
+Always start Claude Code with the plugin loaded:
+```bash
+claude --plugin-dir ~/memo-agent
+```
+
 ### Basic
 
 ```bash
-/memo ./dataroom/acme-corp/
+/memo-agent:memo ./dataroom/acme-corp/
 ```
 
 ### With Templates
@@ -109,7 +115,7 @@ Put example memos in `templates/` to help match your firm's style:
 
 ```bash
 cp ~/Documents/past-memos/*.docx templates/
-/memo ./dataroom/
+/memo-agent:memo ./dataroom/
 ```
 
 ### Resuming
@@ -117,16 +123,32 @@ cp ~/Documents/past-memos/*.docx templates/
 If you have an existing workspace, you'll be asked to resume or start fresh:
 
 ```
-/memo ./dataroom/
+/memo-agent:memo ./dataroom/
 # → "Found existing workspace. Resume where you left off?"
 ```
+
+### Shell Alias (Optional)
+
+To avoid typing the `--plugin-dir` flag every time, add an alias to your shell config:
+
+**macOS/Linux** (add to `~/.bashrc` or `~/.zshrc`):
+```bash
+alias claude-memo='claude --plugin-dir ~/memo-agent'
+```
+
+**Windows PowerShell** (add to your profile):
+```powershell
+function claude-memo { claude --plugin-dir $env:USERPROFILE\memo-agent $args }
+```
+
+Then just run `claude-memo` to start Claude Code with the plugin.
 
 ## Workflow
 
 ```
-┌─────────────────┐
-│  /memo [path]   │
-└────────┬────────┘
+┌─────────────────────────┐
+│  /memo-agent:memo [path]│
+└───────────┬─────────────┘
          ▼
 ┌─────────────────┐
 │ Scan Documents  │
@@ -205,10 +227,13 @@ output/[DealName]-Memo.docx
 
 ## Troubleshooting
 
-**Command `/memo` not found:**
-- Make sure the plugin folder exists: `ls ~/.claude/plugins/memo-agent` (macOS/Linux) or `dir $env:USERPROFILE\.claude\plugins\memo-agent` (Windows)
-- Restart Claude Code after installation
-- Make sure the `.claude-plugin/plugin.json` file exists in the plugin folder
+**Command `/memo-agent:memo` not found:**
+- Make sure you started Claude Code with the `--plugin-dir` flag:
+  ```bash
+  claude --plugin-dir ~/memo-agent
+  ```
+- Verify the plugin folder exists and contains `.claude-plugin/plugin.json`
+- Run `/help` to see if the plugin commands are listed
 
 **`python3: command not found`:**
 - Install Python: `brew install python` (macOS) or download from [python.org](https://www.python.org/downloads/)
