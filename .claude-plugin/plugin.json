@@ -1,0 +1,11 @@
+{
+  "name": "memo-agent",
+  "version": "0.1.0",
+  "description": "AI-assisted investment memo writing from dataroom documents",
+  "commands": {
+    "memo": "./commands/memo.md"
+  },
+  "skills": {
+    "investment-memo": "./skills/investment-memo"
+  }
+}
