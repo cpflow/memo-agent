@@ -4,7 +4,7 @@ A Claude Code plugin that helps investment analysts create professional investme
 
 ## Getting Started (Complete Guide)
 
-Follow these steps in order. You only need to do Steps 1-4 once.
+Follow these steps in order. You only need to do Steps 1-3 once.
 
 ### Step 1: Install Claude Code
 
@@ -30,17 +30,7 @@ If you see `command not found` or a version below 3.9, install Python:
 | **Windows** | Download from [python.org](https://www.python.org/downloads/) and run the installer. **Check "Add Python to PATH"** during installation. |
 | **Linux (Ubuntu/Debian)** | `sudo apt install python3` |
 
-### Step 3: Install uv (Python package manager)
-
-| Platform | Command |
-|----------|---------|
-| **macOS/Linux** | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| **Windows (PowerShell)** | `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 \| iex"` |
-| **Any platform (via pip)** | `pip install uv` |
-
-**Important:** Close and reopen your terminal after installing uv.
-
-### Step 4: Install the memo-agent plugin
+### Step 3: Install the memo-agent plugin
 
 You'll need **git** installed. Check with `git --version`. If not installed:
 - **macOS:** `xcode-select --install` or `brew install git`
@@ -63,15 +53,17 @@ Then install the Python dependencies:
 
 **macOS/Linux:**
 ```bash
-uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt
+pip install pdfplumber python-docx openpyxl
 ```
 
-**Windows (PowerShell):**
-```powershell
-uv pip install -r $env:USERPROFILE\.claude\plugins\memo-agent\requirements.txt
+**Windows (Command Prompt or PowerShell):**
+```bash
+pip install pdfplumber python-docx openpyxl
 ```
 
-### Step 5: Create your first memo
+You can run this command from any directory.
+
+### Step 4: Create your first memo
 
 1. **Get your dataroom documents** into a local folder. You can:
    - Copy/paste files from Dropbox, email, etc.
@@ -209,7 +201,7 @@ output/[DealName]-Memo.docx
 
 - [Claude Code CLI](https://claude.ai/code)
 - [Python 3.9+](https://www.python.org/downloads/)
-- [uv](https://github.com/astral-sh/uv) (Python package manager)
+- [Git](https://git-scm.com/downloads)
 
 ## Troubleshooting
 
@@ -221,14 +213,8 @@ output/[DealName]-Memo.docx
 **`python3: command not found`:**
 - Install Python: `brew install python` (macOS) or download from [python.org](https://www.python.org/downloads/)
 
-**`uv: command not found` / `'uv' is not recognized`:**
-- macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
-- Or any platform: `pip install uv`
-- Restart your terminal after installing
-
 **PDF extraction errors / `ModuleNotFoundError`:**
-- Reinstall dependencies: `uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt`
+- Install the dependencies: `pip install pdfplumber python-docx openpyxl`
 
 **Permission errors:**
 - Check that you have read access to the dataroom folder
