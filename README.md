@@ -52,12 +52,7 @@ pip install pdfplumber python-docx openpyxl
    - Use rclone: `rclone sync dropbox:Datarooms/AcmeCorp ./my-dataroom/`
    - Just drag and drop files into a folder
 
-2. **Open Claude Code** from any directory:
-   ```bash
-   claude
-   ```
-
-3. **Run the memo command** with the path to your documents:
+2. **Run the memo command** in Claude Code with the path to your documents:
    ```
    /memo-agent:memo ./my-dataroom/
    ```
@@ -150,8 +145,11 @@ Standard investment memo structure:
 
 ```
 memo-agent/
+├── .claude-plugin/
+│   ├── plugin.json          # Plugin manifest
+│   └── marketplace.json     # Marketplace config
 ├── commands/
-│   └── memo.md              # /memo command
+│   └── memo.md              # /memo-agent:memo command
 ├── skills/
 │   └── investment-memo/
 │       └── SKILL.md         # Workflow orchestration
@@ -203,3 +201,12 @@ output/[DealName]-Memo.docx
 
 **Permission errors:**
 - Check that you have read access to the dataroom folder
+
+## Updating
+
+To update the plugin to the latest version:
+
+```
+/plugin marketplace update cpflow-memo-agent
+/plugin update memo-agent@cpflow-memo-agent
+```
