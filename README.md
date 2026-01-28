@@ -18,9 +18,18 @@ A Claude Code plugin that helps investment analysts create professional investme
    - **Linux:** `sudo apt install python3` (Ubuntu/Debian)
 
 3. **uv** (Python package manager) - Install with:
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
+   - **macOS/Linux:**
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+   - **Windows (PowerShell):**
+     ```powershell
+     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+     ```
+   - **Or with pip (any platform):**
+     ```bash
+     pip install uv
+     ```
 
 ### Step 1: Install the plugin
 
@@ -195,8 +204,10 @@ output/[DealName]-Memo.docx
 **`python3: command not found`:**
 - Install Python: `brew install python` (macOS) or download from [python.org](https://www.python.org/downloads/)
 
-**`uv: command not found`:**
-- Install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+**`uv: command not found` / `'uv' is not recognized`:**
+- macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+- Or any platform: `pip install uv`
 - Restart your terminal after installing
 
 **PDF extraction errors / `ModuleNotFoundError`:**
