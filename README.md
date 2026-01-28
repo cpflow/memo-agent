@@ -4,15 +4,31 @@ A Claude Code plugin that helps investment analysts create professional investme
 
 ## Installation
 
-### Step 1: Install the plugin
+### Prerequisites
 
-**Via Claude Code CLI (recommended):**
+1. **Claude Code CLI** - [Install Claude Code](https://claude.ai/code) if you haven't already
+
+2. **Python 3.9+** - Check if installed:
+   ```bash
+   python3 --version
+   ```
+   If not installed:
+   - **macOS:** `brew install python`
+   - **Windows:** Download from [python.org](https://www.python.org/downloads/)
+   - **Linux:** `sudo apt install python3` (Ubuntu/Debian)
+
+3. **uv** (Python package manager) - Install with:
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+### Step 1: Install the plugin
 
 ```bash
 claude plugins install cpflow/memo-agent
 ```
 
-**Or manually:**
+Or manually:
 
 ```bash
 git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
@@ -20,23 +36,13 @@ git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
 
 ### Step 2: Install Python dependencies
 
-**Using uv (recommended):**
-
 ```bash
-# Install uv if you don't have it
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install dependencies
 uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt
 ```
 
-**Or using pip:**
+### Step 3: Restart Claude Code
 
-```bash
-pip install -r ~/.claude/plugins/memo-agent/requirements.txt
-```
-
-After installation, restart Claude Code. The `/memo` command will be available.
+Close and reopen Claude Code. The `/memo` command will now be available.
 
 ## Quick Start
 
@@ -176,10 +182,9 @@ output/[DealName]-Memo.docx
 
 ## Requirements
 
-- [Claude Code CLI](https://claude.ai/code) installed and configured
-- Python 3.9+
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
-- Python packages: `pdfplumber`, `python-docx`, `openpyxl`
+- [Claude Code CLI](https://claude.ai/code)
+- [Python 3.9+](https://www.python.org/downloads/)
+- [uv](https://github.com/astral-sh/uv) (Python package manager)
 
 ## Troubleshooting
 
@@ -187,12 +192,15 @@ output/[DealName]-Memo.docx
 - Make sure the plugin is installed: `claude plugins list`
 - Restart Claude Code after installation
 
-**PDF extraction errors:**
-- Ensure dependencies are installed: `uv pip install pdfplumber python-docx openpyxl`
+**`python3: command not found`:**
+- Install Python: `brew install python` (macOS) or download from [python.org](https://www.python.org/downloads/)
+
+**`uv: command not found`:**
+- Install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- Restart your terminal after installing
+
+**PDF extraction errors / `ModuleNotFoundError`:**
+- Reinstall dependencies: `uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt`
 
 **Permission errors:**
 - Check that you have read access to the dataroom folder
-
-**uv not found:**
-- Install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- Or use pip instead: `pip install -r requirements.txt`
