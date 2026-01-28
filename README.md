@@ -2,82 +2,83 @@
 
 A Claude Code plugin that helps investment analysts create professional investment memos from dataroom documents.
 
-## Installation
+## Getting Started (Complete Guide)
 
-### Prerequisites
+Follow these steps in order. You only need to do Steps 1-4 once.
 
-1. **Claude Code CLI** - [Install Claude Code](https://claude.ai/code) if you haven't already
+### Step 1: Install Claude Code
 
-2. **Python 3.9+** - Check if installed:
-   ```bash
-   python3 --version
-   ```
-   If not installed:
-   - **macOS:** `brew install python`
-   - **Windows:** Download from [python.org](https://www.python.org/downloads/)
-   - **Linux:** `sudo apt install python3` (Ubuntu/Debian)
+If you don't have Claude Code installed, get it from [claude.ai/code](https://claude.ai/code).
 
-3. **uv** (Python package manager) - Install with:
-   - **macOS/Linux:**
-     ```bash
-     curl -LsSf https://astral.sh/uv/install.sh | sh
-     ```
-   - **Windows (PowerShell):**
-     ```powershell
-     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-     ```
-   - **Or with pip (any platform):**
-     ```bash
-     pip install uv
-     ```
+Verify it's working by opening a terminal and running:
+```bash
+claude --version
+```
 
-### Step 1: Install the plugin
+### Step 2: Install Python
+
+Check if Python is already installed:
+```bash
+python3 --version
+```
+
+If you see `command not found` or a version below 3.9, install Python:
+
+| Platform | Command |
+|----------|---------|
+| **macOS** | `brew install python` |
+| **Windows** | Download from [python.org](https://www.python.org/downloads/) and run the installer. **Check "Add Python to PATH"** during installation. |
+| **Linux (Ubuntu/Debian)** | `sudo apt install python3` |
+
+### Step 3: Install uv (Python package manager)
+
+| Platform | Command |
+|----------|---------|
+| **macOS/Linux** | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| **Windows (PowerShell)** | `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 \| iex"` |
+| **Any platform (via pip)** | `pip install uv` |
+
+**Important:** Close and reopen your terminal after installing uv.
+
+### Step 4: Install the memo-agent plugin
+
+Run this command from any directory:
 
 ```bash
 claude plugins install cpflow/memo-agent
 ```
 
-Or manually:
+This downloads the plugin to `~/.claude/plugins/memo-agent/`. You do **not** need to run `git clone` separately.
 
-```bash
-git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
-```
-
-### Step 2: Install Python dependencies
+Then install the Python dependencies:
 
 ```bash
 uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt
 ```
 
-### Step 3: Restart Claude Code
+### Step 5: Create your first memo
 
-Close and reopen Claude Code. The `/memo` command will now be available.
+1. **Get your dataroom documents** into a local folder. You can:
+   - Copy/paste files from Dropbox, email, etc.
+   - Use rclone: `rclone sync dropbox:Datarooms/AcmeCorp ./my-dataroom/`
+   - Just drag and drop files into a folder
 
-## Quick Start
+2. **Open Claude Code** from any directory:
+   ```bash
+   claude
+   ```
 
-### 1. Sync Your Dataroom
+3. **Run the memo command** with the path to your documents:
+   ```
+   /memo ./my-dataroom/
+   ```
 
-Use rclone or manually copy your dataroom documents to a local folder:
-
-```bash
-# Example with rclone
-rclone sync dropbox:Datarooms/AcmeCorp ./dataroom/
-
-# Or just copy/paste files into a folder
-```
-
-### 2. Create a Memo
-
-```bash
-/memo ./dataroom/
-```
-
-The plugin will:
-1. Scan all documents in the folder
-2. Propose which materials to include
-3. Draft memo sections one at a time
-4. Get your approval at each step
-5. Export to Word document
+4. **Follow the prompts.** The plugin will:
+   - Scan all documents in the folder
+   - Ask you to approve which materials to use
+   - Draft each memo section one at a time
+   - Ask for your approval before moving to the next section
+   - Export to a Word document when complete
 
 ## Features
 
