@@ -19,7 +19,7 @@ First, check if `.memo-workspace/` exists:
 
 ### 2. Scan and Catalog Documents
 
-First, just LIST the files in the folder (don't read content yet):
+First, list the files in the folder:
 
 ```bash
 ls -la "<folder_path>"
@@ -27,25 +27,64 @@ ls -la "<folder_path>"
 
 Create `.memo-workspace/materials.txt` listing all files found.
 
-### 3. Process Documents ONE AT A TIME
+### 3. Process Documents Using Subagents
 
-**IMPORTANT: To avoid context overflow, process each document separately:**
+**Use a subagent for EACH document** to avoid context limits. The subagent reads the full document in chunks and returns extracted facts.
 
-For each document:
-1. Extract content (use small page limits):
-   - PDFs: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 5`
-   - Excel: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" "<file>" 30`
-   - Text/Word: Use `Read` tool
-2. Extract KEY FACTS only (company name, metrics, dates, key points)
-3. Append facts to `.memo-workspace/notes.txt`
-4. Move to next document
+For each document, use the Task tool:
 
-**Do NOT try to read multiple documents at once.**
+```
+Task tool with subagent_type: "general-purpose"
+prompt: |
+  Extract all key facts from this document for an investment memo.
 
-If a single document is too large:
-- Try fewer pages: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 3`
-- Ask user which pages are most important
-- Skip and note the file for manual review
+  Document: <file_path>
+
+  INSTRUCTIONS:
+  1. For PDFs, read in chunks of 10 pages at a time:
+     - Pages 1-10: python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 1 10
+     - Pages 11-20: python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 11 10
+     - Continue until you've read all pages (script shows total page count)
+  2. For Excel use: python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" "<file>"
+  3. For Word/text files use the Read tool
+  4. Process ALL chunks before returning - don't stop early
+
+  EXTRACT AND RETURN:
+  - Company name and description
+  - All financial metrics (revenue, growth, margins, valuation, etc.)
+  - Key dates and milestones
+  - Management team names and backgrounds
+  - Market size and competitive information
+  - Risks mentioned
+  - Any other investment-relevant facts
+
+  FORMAT your response as:
+  ## Facts from: [filename]
+
+  ### Company Overview
+  - [facts]
+
+  ### Financial Metrics
+  - [facts with specific numbers]
+
+  ### Key People
+  - [names and roles]
+
+  ### Market/Competition
+  - [facts]
+
+  ### Risks/Concerns
+  - [facts]
+
+  ### Other Notable Information
+  - [facts]
+
+  Include page numbers for citations: [page X]
+```
+
+After each subagent returns, append its output to `.memo-workspace/notes.txt`.
+
+**Run subagents in parallel** when possible for faster processing (use multiple Task calls in one message).
 
 ### 4. Propose Materials
 
@@ -243,8 +282,9 @@ If the user has example memos in `templates/`:
 - If a PDF fails to extract, note it and continue with other files
 - If user provides an empty folder, ask for the correct path
 - If dependencies are missing, tell user to run `pip install pdfplumber python-docx openpyxl`
-- **If context is too large ("request too large" error):**
-  - Process fewer documents at a time
-  - Use smaller page limits: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 5`
-  - Ask user which specific documents/pages are most important
-  - Extract key sections only, not entire documents
+- **If a subagent hits context limits:**
+  - Use smaller chunks (5 pages instead of 10)
+  - The subagent should still process ALL chunks, just in smaller batches
+- **If subagent fails:**
+  - Retry with smaller chunk size
+  - Note the error and continue with other documents
