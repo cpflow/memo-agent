@@ -42,18 +42,33 @@ If you see `command not found` or a version below 3.9, install Python:
 
 ### Step 4: Install the memo-agent plugin
 
-Run this command from any directory:
+You'll need **git** installed. Check with `git --version`. If not installed:
+- **macOS:** `xcode-select --install` or `brew install git`
+- **Windows:** Download from [git-scm.com](https://git-scm.com/download/win)
+- **Linux:** `sudo apt install git`
 
+Clone the plugin to your Claude Code plugins directory:
+
+**macOS/Linux:**
 ```bash
-claude plugins install cpflow/memo-agent
+git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
 ```
 
-This downloads the plugin to `~/.claude/plugins/memo-agent/`. You do **not** need to run `git clone` separately.
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/cpflow/memo-agent $env:USERPROFILE\.claude\plugins\memo-agent
+```
 
 Then install the Python dependencies:
 
+**macOS/Linux:**
 ```bash
 uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt
+```
+
+**Windows (PowerShell):**
+```powershell
+uv pip install -r $env:USERPROFILE\.claude\plugins\memo-agent\requirements.txt
 ```
 
 ### Step 5: Create your first memo
@@ -199,8 +214,9 @@ output/[DealName]-Memo.docx
 ## Troubleshooting
 
 **Command `/memo` not found:**
-- Make sure the plugin is installed: `claude plugins list`
+- Make sure the plugin folder exists: `ls ~/.claude/plugins/memo-agent` (macOS/Linux) or `dir $env:USERPROFILE\.claude\plugins\memo-agent` (Windows)
 - Restart Claude Code after installation
+- Make sure the `.claude-plugin/plugin.json` file exists in the plugin folder
 
 **`python3: command not found`:**
 - Install Python: `brew install python` (macOS) or download from [python.org](https://www.python.org/downloads/)
