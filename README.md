@@ -4,25 +4,35 @@ A Claude Code plugin that helps investment analysts create professional investme
 
 ## Installation
 
-### Option 1: Install via Claude Code CLI (recommended)
+### Step 1: Install the plugin
+
+**Via Claude Code CLI (recommended):**
 
 ```bash
 claude plugins install cpflow/memo-agent
 ```
 
-Then install Python dependencies:
+**Or manually:**
 
 ```bash
-pip install -r ~/.claude/plugins/memo-agent/requirements.txt
+git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
 ```
 
-### Option 2: Manual installation
+### Step 2: Install Python dependencies
+
+**Using uv (recommended):**
 
 ```bash
-# Clone the repository
-git clone https://github.com/cpflow/memo-agent ~/.claude/plugins/memo-agent
+# Install uv if you don't have it
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install Python dependencies
+# Install dependencies
+uv pip install -r ~/.claude/plugins/memo-agent/requirements.txt
+```
+
+**Or using pip:**
+
+```bash
 pip install -r ~/.claude/plugins/memo-agent/requirements.txt
 ```
 
@@ -168,7 +178,8 @@ output/[DealName]-Memo.docx
 
 - [Claude Code CLI](https://claude.ai/code) installed and configured
 - Python 3.9+
-- Python packages (installed automatically): `pdfplumber`, `python-docx`, `openpyxl`
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- Python packages: `pdfplumber`, `python-docx`, `openpyxl`
 
 ## Troubleshooting
 
@@ -177,7 +188,11 @@ output/[DealName]-Memo.docx
 - Restart Claude Code after installation
 
 **PDF extraction errors:**
-- Run `pip install pdfplumber` to ensure dependencies are installed
+- Ensure dependencies are installed: `uv pip install pdfplumber python-docx openpyxl`
 
 **Permission errors:**
 - Check that you have read access to the dataroom folder
+
+**uv not found:**
+- Install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- Or use pip instead: `pip install -r requirements.txt`
