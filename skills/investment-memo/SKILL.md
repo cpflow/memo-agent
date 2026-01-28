@@ -17,24 +17,39 @@ First, check if `.memo-workspace/` exists:
 - If it exists and has `status.txt`, ask the user if they want to resume or start fresh
 - If starting fresh, delete the existing workspace
 
-### 2. Read Documents
+### 2. Scan and Catalog Documents
 
-Scan the provided document folder. **Process ONE document at a time** to avoid context limits:
+First, just LIST the files in the folder (don't read content yet):
 
-- Use `Read` tool for .txt, .md files
-- For .docx files, use `Read` tool (extracts text automatically)
-- For PDFs: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 15` (extracts first 15 pages)
-- For Excel: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" "<file>" 50` (extracts first 50 rows per sheet)
-- Skip images and other binary files (note them for user)
+```bash
+ls -la "<folder_path>"
+```
 
-**For large documents:**
-- Extract only the pages/sections most relevant to the memo
-- Use smaller page limits: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 10`
-- If still too large, ask the user which specific pages to extract
+Create `.memo-workspace/materials.txt` listing all files found.
 
-### 3. Propose Materials
+### 3. Process Documents ONE AT A TIME
 
-Show the user what you found:
+**IMPORTANT: To avoid context overflow, process each document separately:**
+
+For each document:
+1. Extract content (use small page limits):
+   - PDFs: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 5`
+   - Excel: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" "<file>" 30`
+   - Text/Word: Use `Read` tool
+2. Extract KEY FACTS only (company name, metrics, dates, key points)
+3. Append facts to `.memo-workspace/notes.txt`
+4. Move to next document
+
+**Do NOT try to read multiple documents at once.**
+
+If a single document is too large:
+- Try fewer pages: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 3`
+- Ask user which pages are most important
+- Skip and note the file for manual review
+
+### 4. Propose Materials
+
+After cataloging, show the user what you found:
 
 ```markdown
 ## Documents Found
@@ -54,7 +69,7 @@ Should I proceed with these? You can say "include [file]" or "exclude [file]".
 
 Wait for user approval before proceeding.
 
-### 4. Propose Sections
+### 5. Propose Sections
 
 Based on available materials, propose memo structure:
 
@@ -74,15 +89,16 @@ Based on the documents and standard memo structure, I'll draft:
 Want me to start with Deal Summary?
 ```
 
-### 5. Draft Each Section
+### 6. Draft Each Section
 
 For each section:
 
-1. Read relevant source documents
+1. Read `.memo-workspace/notes.txt` for extracted facts (don't re-read original documents)
 2. Draft the section following style guide below
 3. Include citations: `[Source: filename, page X]`
 4. Show word count and target range
 5. Ask for approval before proceeding to next section
+6. If you need more detail from a specific document, extract just that document again
 
 ```markdown
 ## [Section Name] (Draft)
@@ -97,13 +113,13 @@ Approve this section? Or give me feedback to revise.
 
 If user provides feedback, revise and show again.
 
-### 6. Save Progress
+### 7. Save Progress
 
 After each approved section:
 - Update `.memo-workspace/memo.md` with the section
 - Update `.memo-workspace/status.txt` with current progress
 
-### 7. Export
+### 8. Export
 
 Once all sections are approved:
 

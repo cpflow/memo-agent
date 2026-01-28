@@ -8,12 +8,12 @@ import pdfplumber
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 
-def extract(path: str, max_pages: int = 15) -> str:
+def extract(path: str, max_pages: int = 5) -> str:
     """Extract text and tables from a PDF file.
 
     Args:
         path: Path to the PDF file
-        max_pages: Maximum pages to extract (default 15)
+        max_pages: Maximum pages to extract (default 5)
 
     Returns:
         Extracted text with page markers and tables
@@ -44,5 +44,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     pdf_path = sys.argv[1]
-    max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 15
+    max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 5
     print(extract(pdf_path, max_pages))
