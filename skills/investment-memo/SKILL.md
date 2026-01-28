@@ -19,11 +19,18 @@ First, check if `.memo-workspace/` exists:
 
 ### 2. Read Documents
 
-Scan the provided document folder:
-- Use `Read` tool for .txt, .md, .docx files
-- Use `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" <file>` via Bash for PDFs
-- Use `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" <file>` via Bash for .xlsx files
+Scan the provided document folder. **Process ONE document at a time** to avoid context limits:
+
+- Use `Read` tool for .txt, .md files
+- For .docx files, use `Read` tool (extracts text automatically)
+- For PDFs: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 15` (extracts first 15 pages)
+- For Excel: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" "<file>" 50` (extracts first 50 rows per sheet)
 - Skip images and other binary files (note them for user)
+
+**For large documents:**
+- Extract only the pages/sections most relevant to the memo
+- Use smaller page limits: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 10`
+- If still too large, ask the user which specific pages to extract
 
 ### 3. Propose Materials
 
@@ -220,3 +227,8 @@ If the user has example memos in `templates/`:
 - If a PDF fails to extract, note it and continue with other files
 - If user provides an empty folder, ask for the correct path
 - If dependencies are missing, tell user to run `pip install pdfplumber python-docx openpyxl`
+- **If context is too large ("request too large" error):**
+  - Process fewer documents at a time
+  - Use smaller page limits: `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" "<file>" 5`
+  - Ask user which specific documents/pages are most important
+  - Extract key sections only, not entire documents

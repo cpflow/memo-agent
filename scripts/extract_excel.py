@@ -4,12 +4,12 @@ import sys
 from openpyxl import load_workbook
 
 
-def extract(path: str, max_rows: int = 100) -> str:
+def extract(path: str, max_rows: int = 50) -> str:
     """Extract data from an Excel file as markdown tables.
 
     Args:
         path: Path to the Excel file
-        max_rows: Maximum rows per sheet to extract (default 100)
+        max_rows: Maximum rows per sheet to extract (default 50)
 
     Returns:
         Extracted content as markdown tables
