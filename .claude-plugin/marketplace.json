@@ -1,0 +1,14 @@
+{
+  "name": "cpflow-memo-agent",
+  "owner": {
+    "name": "cpflow"
+  },
+  "plugins": [
+    {
+      "name": "memo-agent",
+      "source": ".",
+      "description": "AI-assisted investment memo writing from dataroom documents",
+      "version": "0.1.0"
+    }
+  ]
+}

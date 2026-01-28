@@ -4,7 +4,7 @@ A Claude Code plugin that helps investment analysts create professional investme
 
 ## Getting Started (Complete Guide)
 
-Follow these steps in order. You only need to do Steps 1-3 once.
+Follow these steps in order. You only need to do Steps 1-3 once (setup).
 
 ### Step 1: Install Claude Code
 
@@ -32,30 +32,18 @@ If you see `command not found` or a version below 3.9, install Python:
 
 ### Step 3: Install the memo-agent plugin
 
-You'll need **git** installed. Check with `git --version`. If not installed:
-- **macOS:** `xcode-select --install` or `brew install git`
-- **Windows:** Download from [git-scm.com](https://git-scm.com/download/win)
-- **Linux:** `sudo apt install git`
+Open Claude Code and run these commands:
 
-**Clone the plugin** to any location you prefer:
-
-**macOS/Linux:**
-```bash
-git clone https://github.com/cpflow/memo-agent ~/memo-agent
+```
+/plugin marketplace add cpflow/memo-agent
+/plugin install memo-agent@cpflow-memo-agent
 ```
 
-**Windows (PowerShell):**
-```powershell
-git clone https://github.com/cpflow/memo-agent $env:USERPROFILE\memo-agent
-```
-
-**Install Python dependencies:**
+Then install the Python dependencies (run this in your terminal):
 
 ```bash
 pip install pdfplumber python-docx openpyxl
 ```
-
-You can run this command from any directory.
 
 ### Step 4: Create your first memo
 
@@ -64,16 +52,9 @@ You can run this command from any directory.
    - Use rclone: `rclone sync dropbox:Datarooms/AcmeCorp ./my-dataroom/`
    - Just drag and drop files into a folder
 
-2. **Open Claude Code with the plugin loaded:**
-
-   **macOS/Linux:**
+2. **Open Claude Code** from any directory:
    ```bash
-   claude --plugin-dir ~/memo-agent
-   ```
-
-   **Windows (PowerShell):**
-   ```powershell
-   claude --plugin-dir $env:USERPROFILE\memo-agent
+   claude
    ```
 
 3. **Run the memo command** with the path to your documents:
@@ -98,14 +79,9 @@ You can run this command from any directory.
 
 ## Usage
 
-Always start Claude Code with the plugin loaded:
-```bash
-claude --plugin-dir ~/memo-agent
-```
-
 ### Basic
 
-```bash
+```
 /memo-agent:memo ./dataroom/acme-corp/
 ```
 
@@ -126,22 +102,6 @@ If you have an existing workspace, you'll be asked to resume or start fresh:
 /memo-agent:memo ./dataroom/
 # → "Found existing workspace. Resume where you left off?"
 ```
-
-### Shell Alias (Optional)
-
-To avoid typing the `--plugin-dir` flag every time, add an alias to your shell config:
-
-**macOS/Linux** (add to `~/.bashrc` or `~/.zshrc`):
-```bash
-alias claude-memo='claude --plugin-dir ~/memo-agent'
-```
-
-**Windows PowerShell** (add to your profile):
-```powershell
-function claude-memo { claude --plugin-dir $env:USERPROFILE\memo-agent $args }
-```
-
-Then just run `claude-memo` to start Claude Code with the plugin.
 
 ## Workflow
 
@@ -223,17 +183,17 @@ output/[DealName]-Memo.docx
 
 - [Claude Code CLI](https://claude.ai/code)
 - [Python 3.9+](https://www.python.org/downloads/)
-- [Git](https://git-scm.com/downloads)
 
 ## Troubleshooting
 
 **Command `/memo-agent:memo` not found:**
-- Make sure you started Claude Code with the `--plugin-dir` flag:
-  ```bash
-  claude --plugin-dir ~/memo-agent
+- Make sure you installed the plugin:
   ```
-- Verify the plugin folder exists and contains `.claude-plugin/plugin.json`
-- Run `/help` to see if the plugin commands are listed
+  /plugin marketplace add cpflow/memo-agent
+  /plugin install memo-agent@cpflow-memo-agent
+  ```
+- Run `/plugin` and check the **Installed** tab to verify the plugin is installed
+- Try restarting Claude Code after installation
 
 **`python3: command not found`:**
 - Install Python: `brew install python` (macOS) or download from [python.org](https://www.python.org/downloads/)
