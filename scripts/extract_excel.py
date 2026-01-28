@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Extract data from Excel files using openpyxl."""
 import sys
+import io
 from openpyxl import load_workbook
+
+# Fix Windows encoding issues
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 
 def extract(path: str, max_rows: int = 50) -> str:

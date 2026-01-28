@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Extract text and tables from PDF using pdfplumber."""
 import sys
+import io
 import pdfplumber
+
+# Fix Windows encoding issues
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 
 def extract(path: str, max_pages: int = 15) -> str:

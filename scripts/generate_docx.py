@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Generate Word document from markdown."""
 import sys
+import io
 import re
 from pathlib import Path
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+# Fix Windows encoding issues
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 
 def markdown_to_docx(md_path: str, output_path: str, template_path: str = None):
