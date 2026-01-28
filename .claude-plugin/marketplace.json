@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "memo-agent",
-      "source": ".",
+      "source": "./",
       "description": "AI-assisted investment memo writing from dataroom documents",
       "version": "0.1.0"
     }
