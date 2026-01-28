@@ -54,7 +54,7 @@ pip install pdfplumber python-docx openpyxl
 
 2. **Run the memo command** in Claude Code with the path to your documents:
    ```
-   /memo-agent:memo ./my-dataroom/
+   /memo ./my-dataroom/
    ```
 
 4. **Follow the prompts.** The plugin will:
@@ -77,7 +77,7 @@ pip install pdfplumber python-docx openpyxl
 ### Basic
 
 ```
-/memo-agent:memo ./dataroom/acme-corp/
+/memo ./dataroom/acme-corp/
 ```
 
 ### With Templates
@@ -86,7 +86,7 @@ Put example memos in `templates/` to help match your firm's style:
 
 ```bash
 cp ~/Documents/past-memos/*.docx templates/
-/memo-agent:memo ./dataroom/
+/memo ./dataroom/
 ```
 
 ### Resuming
@@ -94,7 +94,7 @@ cp ~/Documents/past-memos/*.docx templates/
 If you have an existing workspace, you'll be asked to resume or start fresh:
 
 ```
-/memo-agent:memo ./dataroom/
+/memo ./dataroom/
 # → "Found existing workspace. Resume where you left off?"
 ```
 
@@ -102,7 +102,7 @@ If you have an existing workspace, you'll be asked to resume or start fresh:
 
 ```
 ┌─────────────────────────┐
-│  /memo-agent:memo [path]│
+│  /memo [path]│
 └───────────┬─────────────┘
          ▼
 ┌─────────────────┐
@@ -149,7 +149,7 @@ memo-agent/
 │   ├── plugin.json          # Plugin manifest
 │   └── marketplace.json     # Marketplace config
 ├── commands/
-│   └── memo.md              # /memo-agent:memo command
+│   └── memo.md              # /memo command
 ├── skills/
 │   └── investment-memo/
 │       └── SKILL.md         # Workflow orchestration
@@ -184,7 +184,7 @@ output/[DealName]-Memo.docx
 
 ## Troubleshooting
 
-**Command `/memo-agent:memo` not found:**
+**Command `/memo` not found:**
 - Make sure you installed the plugin:
   ```
   /plugin marketplace add cpflow/memo-agent
