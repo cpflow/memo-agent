@@ -21,8 +21,8 @@ First, check if `.memo-workspace/` exists:
 
 Scan the provided document folder:
 - Use `Read` tool for .txt, .md, .docx files
-- Use `python scripts/extract_pdf.py <file>` via Bash for PDFs
-- Use `python scripts/extract_excel.py <file>` via Bash for .xlsx files
+- Use `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_pdf.py" <file>` via Bash for PDFs
+- Use `python "${CLAUDE_PLUGIN_ROOT}/scripts/extract_excel.py" <file>` via Bash for .xlsx files
 - Skip images and other binary files (note them for user)
 
 ### 3. Propose Materials
@@ -101,7 +101,7 @@ After each approved section:
 Once all sections are approved:
 
 ```bash
-python scripts/generate_docx.py .memo-workspace/memo.md output/[DealName]-Memo.docx
+python "${CLAUDE_PLUGIN_ROOT}/scripts/generate_docx.py" .memo-workspace/memo.md output/[DealName]-Memo.docx
 ```
 
 Show the user where the file was saved.
@@ -219,4 +219,4 @@ If the user has example memos in `templates/`:
 
 - If a PDF fails to extract, note it and continue with other files
 - If user provides an empty folder, ask for the correct path
-- If dependencies are missing, tell user to run `pip install -r requirements.txt`
+- If dependencies are missing, tell user to run `pip install pdfplumber python-docx openpyxl`
