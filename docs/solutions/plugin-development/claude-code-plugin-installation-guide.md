@@ -32,13 +32,15 @@ Create `.claude-plugin/marketplace.json` alongside your existing `plugin.json`:
   "plugins": [
     {
       "name": "plugin-name",
-      "source": ".",
+      "source": "./",
       "description": "Your plugin description",
       "version": "1.0.0"
     }
   ]
 }
 ```
+
+**Important:** Use `"./"` not `"."` for the source path.
 
 Key points:
 - `name` in marketplace.json becomes the marketplace identifier (e.g., `cpflow-memo-agent`)
@@ -60,6 +62,27 @@ Example:
 /plugin install memo-agent@cpflow-memo-agent
 ```
 
+### Plugin manifest (plugin.json)
+
+Keep it minimal - commands and skills in default directories are auto-discovered:
+
+```json
+{
+  "name": "plugin-name",
+  "version": "1.0.0",
+  "description": "Your plugin description"
+}
+```
+
+**Do NOT use object format for commands/skills** - this is invalid:
+```json
+// WRONG - causes "Invalid input" error
+{
+  "commands": { "memo": "./commands/memo.md" },
+  "skills": { "my-skill": "./skills/my-skill" }
+}
+```
+
 ### Directory Structure
 
 ```
@@ -67,19 +90,21 @@ my-plugin/
 ├── .claude-plugin/
 │   ├── plugin.json       # Plugin manifest (required)
 │   └── marketplace.json  # Marketplace manifest (required for distribution)
-├── commands/             # Slash commands
-├── skills/               # Agent skills
-├── agents/               # Custom agents
+├── commands/             # Slash commands (auto-discovered)
+├── skills/               # Agent skills (auto-discovered)
+├── agents/               # Custom agents (auto-discovered)
 └── scripts/              # Helper scripts
 ```
 
 ## Key Insights
 
 1. **Marketplaces are required for distribution**: The `/plugin install` command only works with marketplaces
-2. **A plugin repo can be its own marketplace**: Add `marketplace.json` with `"source": "."`
-3. **Commands are namespaced**: `/plugin-name:command`, not just `/command`
-4. **--plugin-dir is for development only**: Not for end-user installation
-5. **No manual file placement**: Don't tell users to clone to `~/.claude/plugins/`
+2. **A plugin repo can be its own marketplace**: Add `marketplace.json` with `"source": "./"`
+3. **Use "./" not "."**: The source path must be `"./"` not `"."` (causes "invalid schema" error)
+4. **Keep plugin.json minimal**: Don't specify commands/skills as objects - they're auto-discovered from directories
+5. **Commands are namespaced**: `/plugin-name:command`, not just `/command`
+6. **--plugin-dir is for development only**: Not for end-user installation
+7. **No manual file placement**: Don't tell users to clone to `~/.claude/plugins/`
 
 ## Alternative: Development/Testing Only
 
