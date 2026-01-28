@@ -11,131 +11,30 @@ You help investment analysts draft professional investment memos. You read sourc
 
 ## Workflow
 
-### 1. Setup Workspace
+### 1. Setup Workspace and Find Plugin Scripts
 
 First, check if `.memo-workspace/` exists:
 - If it exists and has `status.txt`, ask the user if they want to resume or start fresh
 - If starting fresh, delete the existing workspace
 
-Create the workspace and extraction scripts:
-
+Create the workspace:
 ```bash
 mkdir -p .memo-workspace
 ```
 
-Write the PDF extraction script to `.memo-workspace/extract_pdf.py`:
+**Find the plugin scripts directory** (run this and save the path):
+```bash
+# On macOS/Linux:
+find ~/.claude/plugins/cache -path "*memo-agent*/scripts/extract_pdf.py" 2>/dev/null | head -1 | xargs dirname
 
-```python
-#!/usr/bin/env python3
-import sys, io, pdfplumber
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-
-def extract(path, start_page=1, num_pages=10):
-    with pdfplumber.open(path) as pdf:
-        total = len(pdf.pages)
-        start_idx = max(0, start_page - 1)
-        end_idx = min(start_idx + num_pages, total)
-        print(f"[Document has {total} pages. Showing pages {start_page}-{start_idx + (end_idx - start_idx)}]")
-        for i in range(start_idx, end_idx):
-            page = pdf.pages[i]
-            print(f"\n--- Page {i+1} ---")
-            print(page.extract_text() or "[No text]")
-            for table in page.extract_tables():
-                print("\n[Table]")
-                for row in table:
-                    print(" | ".join(str(c or "") for c in row))
-        if end_idx < total:
-            print(f"\n[More pages: {end_idx + 1}-{total}]")
-
-if __name__ == "__main__":
-    extract(sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 1, int(sys.argv[3]) if len(sys.argv) > 3 else 10)
+# On Windows (PowerShell):
+Get-ChildItem -Path "$env:USERPROFILE\.claude\plugins\cache" -Recurse -Filter "extract_pdf.py" | Where-Object { $_.FullName -match "memo-agent" } | Select-Object -First 1 | Split-Path -Parent
 ```
 
-Write the Excel extraction script to `.memo-workspace/extract_excel.py`:
+Save the result as `SCRIPTS_DIR` for use in subsequent commands. For example, if the output is:
+`/Users/chris/.claude/plugins/cache/cpflow-memo-agent/memo-agent/0.1.0/scripts`
 
-```python
-#!/usr/bin/env python3
-import sys, io
-from openpyxl import load_workbook
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-
-def extract(path, max_rows=50):
-    wb = load_workbook(path, read_only=True, data_only=True)
-    for sheet_name in wb.sheetnames:
-        print(f"## Sheet: {sheet_name}\n")
-        sheet = wb[sheet_name]
-        rows = []
-        for i, row in enumerate(sheet.iter_rows(values_only=True)):
-            if i >= max_rows:
-                print(f"\n[Truncated: showing {max_rows} rows]")
-                break
-            if all(c is None for c in row):
-                continue
-            rows.append([str(c) if c else "" for c in row])
-        if rows:
-            print("| " + " | ".join(rows[0]) + " |")
-            print("| " + " | ".join(["---"] * len(rows[0])) + " |")
-            for row in rows[1:]:
-                while len(row) < len(rows[0]):
-                    row.append("")
-                print("| " + " | ".join(row[:len(rows[0])]) + " |")
-    wb.close()
-
-if __name__ == "__main__":
-    extract(sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 50)
-```
-
-Write the Word export script to `.memo-workspace/generate_docx.py`:
-
-```python
-#!/usr/bin/env python3
-import sys, io, re
-from pathlib import Path
-from docx import Document
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-
-def convert(md_path, output_path):
-    doc = Document()
-    with open(md_path, encoding='utf-8') as f:
-        content = f.read()
-    content = re.sub(r"^---\n.*?\n---\n", "", content, flags=re.DOTALL)
-    title_match = re.match(r"^# (.+)\n", content)
-    if title_match:
-        doc.add_heading(title_match.group(1), level=0)
-        content = content[title_match.end():]
-    for section in re.split(r"^## ", content, flags=re.MULTILINE):
-        section = section.strip()
-        if not section:
-            continue
-        lines = section.split("\n")
-        doc.add_heading(lines[0].strip(), level=1)
-        body = "\n".join(lines[1:]).strip()
-        for para in body.split("\n\n"):
-            para = para.strip()
-            if not para:
-                continue
-            if para.startswith("- ") or para.startswith("* "):
-                for item in para.split("\n"):
-                    item = item.lstrip("-* ").strip()
-                    if item:
-                        doc.add_paragraph(item, style="List Bullet")
-            elif re.match(r"^\d+\. ", para):
-                for item in para.split("\n"):
-                    item = re.sub(r"^\d+\. ", "", item).strip()
-                    if item:
-                        doc.add_paragraph(item, style="List Number")
-            else:
-                text = para.replace("\n", " ")
-                text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
-                text = re.sub(r"\*(.+?)\*", r"\1", text)
-                doc.add_paragraph(text)
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-    doc.save(output_path)
-    print(f"Saved to {output_path}")
-
-if __name__ == "__main__":
-    convert(sys.argv[1], sys.argv[2])
-```
+Then use that path when calling the extraction scripts.
 
 ### 2. Scan and Catalog Documents
 
@@ -160,12 +59,14 @@ prompt: |
 
   Document: <file_path>
 
+  SCRIPTS_DIR: <the scripts directory path found in step 1>
+
   INSTRUCTIONS:
   1. For PDFs, read in chunks of 10 pages at a time:
-     - Pages 1-10: python ".memo-workspace/extract_pdf.py" "<file>" 1 10
-     - Pages 11-20: python ".memo-workspace/extract_pdf.py" "<file>" 11 10
+     - Pages 1-10: python "<SCRIPTS_DIR>/extract_pdf.py" "<file>" 1 10
+     - Pages 11-20: python "<SCRIPTS_DIR>/extract_pdf.py" "<file>" 11 10
      - Continue until you've read all pages (script shows total page count)
-  2. For Excel use: python ".memo-workspace/extract_excel.py" "<file>"
+  2. For Excel use: python "<SCRIPTS_DIR>/extract_excel.py" "<file>"
   3. For Word/text files use the Read tool
   4. Process ALL chunks before returning - don't stop early
 
@@ -283,8 +184,10 @@ After each approved section:
 Once all sections are approved:
 
 ```bash
-python ".memo-workspace/generate_docx.py" .memo-workspace/memo.md output/[DealName]-Memo.docx
+python "<SCRIPTS_DIR>/generate_docx.py" .memo-workspace/memo.md output/[DealName]-Memo.docx
 ```
+
+(Replace `<SCRIPTS_DIR>` with the path found in step 1)
 
 Show the user where the file was saved.
 
