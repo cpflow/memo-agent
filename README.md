@@ -38,7 +38,13 @@ First, install the Python dependencies (run this in your terminal):
 pip install pdfplumber python-docx openpyxl
 ```
 
-Then open Claude Code and run these commands:
+Then start Claude Code by typing `claude` in your terminal:
+
+```bash
+claude
+```
+
+Once Claude Code is running, install the plugin:
 
 ```
 /plugin marketplace add cpflow/memo-agent
