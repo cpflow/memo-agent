@@ -152,11 +152,11 @@ memo-agent/
 │   └── memo.md              # /memo command
 ├── skills/
 │   └── investment-memo/
-│       └── SKILL.md         # Workflow orchestration
-├── scripts/
-│   ├── extract_pdf.py       # PDF extraction
-│   ├── extract_excel.py     # Excel extraction
-│   └── generate_docx.py     # Word generation
+│       ├── SKILL.md         # Workflow orchestration
+│       └── scripts/         # Extraction scripts (per Claude Code best practices)
+│           ├── extract_pdf.py
+│           ├── extract_excel.py
+│           └── generate_docx.py
 ├── templates/               # Example memos (add yours)
 ├── output/                  # Generated files
 └── requirements.txt
