@@ -46,34 +46,17 @@ prompt: |
   Document: <file_path>
 
   INSTRUCTIONS:
-  1. For PDFs, use this inline Python command (change START and COUNT as needed):
+  1. For PDFs, read in chunks of 10 pages at a time:
+     ```bash
+     python scripts/extract_pdf.py "<file>" 1 10
      ```
-     python -c "
-     import pdfplumber
-     START=1; COUNT=10
-     with pdfplumber.open('<file>') as pdf:
-         total=len(pdf.pages); print(f'[{total} pages total]')
-         for i in range(START-1, min(START-1+COUNT, total)):
-             print(f'--- Page {i+1} ---')
-             print(pdf.pages[i].extract_text() or '[No text]')
-         if START-1+COUNT < total: print(f'[More pages: {START+COUNT}-{total}]')
-     "
-     ```
-     - First chunk: START=1, COUNT=10 (pages 1-10)
-     - Second chunk: START=11, COUNT=10 (pages 11-20)
-     - Continue until all pages are read
+     - First chunk: start=1, count=10 (pages 1-10)
+     - Next chunk: start=11, count=10 (pages 11-20)
+     - Continue until all pages are read (script shows total page count)
 
-  2. For Excel, use this inline Python command:
-     ```
-     python -c "
-     from openpyxl import load_workbook
-     wb=load_workbook('<file>', read_only=True, data_only=True)
-     for s in wb.sheetnames:
-         print(f'## {s}')
-         for i,row in enumerate(wb[s].iter_rows(values_only=True)):
-             if i>=50: print('[Truncated]'); break
-             if any(row): print(' | '.join(str(c or '') for c in row))
-     "
+  2. For Excel:
+     ```bash
+     python scripts/extract_excel.py "<file>"
      ```
 
   3. For Word/text files use the Read tool
@@ -192,40 +175,8 @@ After each approved section:
 
 Once all sections are approved:
 
-```python
-python -c "
-import re
-from pathlib import Path
-from docx import Document
-
-with open('.memo-workspace/memo.md', encoding='utf-8') as f:
-    content = f.read()
-
-doc = Document()
-content = re.sub(r'^---\n.*?\n---\n', '', content, flags=re.DOTALL)
-title = re.match(r'^# (.+)\n', content)
-if title:
-    doc.add_heading(title.group(1), level=0)
-    content = content[title.end():]
-
-for section in re.split(r'^## ', content, flags=re.MULTILINE):
-    section = section.strip()
-    if not section: continue
-    lines = section.split('\n')
-    doc.add_heading(lines[0].strip(), level=1)
-    for para in '\n'.join(lines[1:]).split('\n\n'):
-        para = para.strip()
-        if not para: continue
-        if para.startswith('- '):
-            for item in para.split('\n'):
-                if item.strip(): doc.add_paragraph(item.lstrip('- '), style='List Bullet')
-        else:
-            doc.add_paragraph(para.replace('\n', ' '))
-
-Path('output').mkdir(exist_ok=True)
-doc.save('output/[DealName]-Memo.docx')
-print('Saved to output/[DealName]-Memo.docx')
-"
+```bash
+python scripts/generate_docx.py .memo-workspace/memo.md output/[DealName]-Memo.docx
 ```
 
 Replace `[DealName]` with the actual deal name.
