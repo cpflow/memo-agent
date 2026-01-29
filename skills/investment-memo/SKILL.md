@@ -1,6 +1,7 @@
 ---
 name: investment-memo
 description: Draft investment memos from dataroom documents
+allowed-tools: Bash(python *)
 ---
 
 # Investment Memo Skill
