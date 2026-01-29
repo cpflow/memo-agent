@@ -11,7 +11,7 @@ You help investment analysts draft professional investment memos. You read sourc
 
 ## Workflow
 
-### 1. Setup Workspace and Find Plugin Scripts
+### 1. Setup Workspace
 
 First, check if `.memo-workspace/` exists:
 - If it exists and has `status.txt`, ask the user if they want to resume or start fresh
@@ -21,20 +21,6 @@ Create the workspace:
 ```bash
 mkdir -p .memo-workspace
 ```
-
-**Find the plugin scripts directory** (run this and save the path):
-```bash
-# On macOS/Linux:
-find ~/.claude/plugins/cache -path "*memo-agent*/scripts/extract_pdf.py" 2>/dev/null | head -1 | xargs dirname
-
-# On Windows (PowerShell):
-Get-ChildItem -Path "$env:USERPROFILE\.claude\plugins\cache" -Recurse -Filter "extract_pdf.py" | Where-Object { $_.FullName -match "memo-agent" } | Select-Object -First 1 | Split-Path -Parent
-```
-
-Save the result as `SCRIPTS_DIR` for use in subsequent commands. For example, if the output is:
-`/Users/chris/.claude/plugins/cache/cpflow-memo-agent/memo-agent/0.1.0/scripts`
-
-Then use that path when calling the extraction scripts.
 
 ### 2. Scan and Catalog Documents
 
@@ -59,14 +45,37 @@ prompt: |
 
   Document: <file_path>
 
-  SCRIPTS_DIR: <the scripts directory path found in step 1>
-
   INSTRUCTIONS:
-  1. For PDFs, read in chunks of 10 pages at a time:
-     - Pages 1-10: python "<SCRIPTS_DIR>/extract_pdf.py" "<file>" 1 10
-     - Pages 11-20: python "<SCRIPTS_DIR>/extract_pdf.py" "<file>" 11 10
-     - Continue until you've read all pages (script shows total page count)
-  2. For Excel use: python "<SCRIPTS_DIR>/extract_excel.py" "<file>"
+  1. For PDFs, use this inline Python command (change START and COUNT as needed):
+     ```
+     python -c "
+     import pdfplumber
+     START=1; COUNT=10
+     with pdfplumber.open('<file>') as pdf:
+         total=len(pdf.pages); print(f'[{total} pages total]')
+         for i in range(START-1, min(START-1+COUNT, total)):
+             print(f'--- Page {i+1} ---')
+             print(pdf.pages[i].extract_text() or '[No text]')
+         if START-1+COUNT < total: print(f'[More pages: {START+COUNT}-{total}]')
+     "
+     ```
+     - First chunk: START=1, COUNT=10 (pages 1-10)
+     - Second chunk: START=11, COUNT=10 (pages 11-20)
+     - Continue until all pages are read
+
+  2. For Excel, use this inline Python command:
+     ```
+     python -c "
+     from openpyxl import load_workbook
+     wb=load_workbook('<file>', read_only=True, data_only=True)
+     for s in wb.sheetnames:
+         print(f'## {s}')
+         for i,row in enumerate(wb[s].iter_rows(values_only=True)):
+             if i>=50: print('[Truncated]'); break
+             if any(row): print(' | '.join(str(c or '') for c in row))
+     "
+     ```
+
   3. For Word/text files use the Read tool
   4. Process ALL chunks before returning - don't stop early
 
@@ -183,11 +192,43 @@ After each approved section:
 
 Once all sections are approved:
 
-```bash
-python "<SCRIPTS_DIR>/generate_docx.py" .memo-workspace/memo.md output/[DealName]-Memo.docx
+```python
+python -c "
+import re
+from pathlib import Path
+from docx import Document
+
+with open('.memo-workspace/memo.md', encoding='utf-8') as f:
+    content = f.read()
+
+doc = Document()
+content = re.sub(r'^---\n.*?\n---\n', '', content, flags=re.DOTALL)
+title = re.match(r'^# (.+)\n', content)
+if title:
+    doc.add_heading(title.group(1), level=0)
+    content = content[title.end():]
+
+for section in re.split(r'^## ', content, flags=re.MULTILINE):
+    section = section.strip()
+    if not section: continue
+    lines = section.split('\n')
+    doc.add_heading(lines[0].strip(), level=1)
+    for para in '\n'.join(lines[1:]).split('\n\n'):
+        para = para.strip()
+        if not para: continue
+        if para.startswith('- '):
+            for item in para.split('\n'):
+                if item.strip(): doc.add_paragraph(item.lstrip('- '), style='List Bullet')
+        else:
+            doc.add_paragraph(para.replace('\n', ' '))
+
+Path('output').mkdir(exist_ok=True)
+doc.save('output/[DealName]-Memo.docx')
+print('Saved to output/[DealName]-Memo.docx')
+"
 ```
 
-(Replace `<SCRIPTS_DIR>` with the path found in step 1)
+Replace `[DealName]` with the actual deal name.
 
 Show the user where the file was saved.
 
