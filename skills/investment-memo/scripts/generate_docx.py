@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate Word document from markdown."""
 import sys
-import io
+import os
 import re
 from pathlib import Path
 from docx import Document
@@ -9,7 +9,14 @@ from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 # Fix Windows encoding issues
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+os.environ["PYTHONIOENCODING"] = "utf-8"
+
+def safe_print(text):
+    """Print text safely, replacing unencodable characters."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        print(text.encode('utf-8', errors='replace').decode('utf-8', errors='replace'))
 
 
 def markdown_to_docx(md_path: str, output_path: str, template_path: str = None):
@@ -87,12 +94,12 @@ def markdown_to_docx(md_path: str, output_path: str, template_path: str = None):
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
     doc.save(output_path)
-    print(f"Saved to {output_path}")
+    safe_print(f"Saved to {output_path}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python generate_docx.py <input.md> <output.docx> [template.docx]")
+        safe_print("Usage: python generate_docx.py <input.md> <output.docx> [template.docx]")
         sys.exit(1)
 
     md_path = sys.argv[1]

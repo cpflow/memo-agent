@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """Extract data from Excel files using openpyxl."""
 import sys
-import io
+import os
 from openpyxl import load_workbook
 
 # Fix Windows encoding issues
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+os.environ["PYTHONIOENCODING"] = "utf-8"
+
+def safe_print(text):
+    """Print text safely, replacing unencodable characters."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        print(text.encode('utf-8', errors='replace').decode('utf-8', errors='replace'))
 
 
 def extract(path: str, max_rows: int = 50) -> str:
@@ -60,9 +67,9 @@ def extract(path: str, max_rows: int = 50) -> str:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python extract_excel.py <path-to-excel> [max-rows]")
+        safe_print("Usage: python extract_excel.py <path-to-excel> [max-rows]")
         sys.exit(1)
 
     excel_path = sys.argv[1]
     max_rows = int(sys.argv[2]) if len(sys.argv) > 2 else 100
-    print(extract(excel_path, max_rows))
+    safe_print(extract(excel_path, max_rows))

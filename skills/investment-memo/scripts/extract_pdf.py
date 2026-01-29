@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 """Extract text and tables from PDF using pdfplumber."""
 import sys
-import io
+import os
 import pdfplumber
 
-# Fix Windows encoding issues
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+# Fix Windows encoding issues - set environment before any output
+os.environ["PYTHONIOENCODING"] = "utf-8"
+
+def safe_print(text):
+    """Print text safely, replacing unencodable characters."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        # Fallback: encode with replacement, then decode
+        print(text.encode('utf-8', errors='replace').decode('utf-8', errors='replace'))
 
 
 def extract(path: str, start_page: int = 1, num_pages: int = 10) -> str:
@@ -48,12 +56,12 @@ def extract(path: str, start_page: int = 1, num_pages: int = 10) -> str:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python extract_pdf.py <path-to-pdf> [start-page] [num-pages]")
-        print("  start-page: Page to start from (1-indexed, default 1)")
-        print("  num-pages: Number of pages to extract (default 10)")
+        safe_print("Usage: python extract_pdf.py <path-to-pdf> [start-page] [num-pages]")
+        safe_print("  start-page: Page to start from (1-indexed, default 1)")
+        safe_print("  num-pages: Number of pages to extract (default 10)")
         sys.exit(1)
 
     pdf_path = sys.argv[1]
     start_page = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     num_pages = int(sys.argv[3]) if len(sys.argv) > 3 else 10
-    print(extract(pdf_path, start_page, num_pages))
+    safe_print(extract(pdf_path, start_page, num_pages))
