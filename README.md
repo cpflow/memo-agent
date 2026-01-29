@@ -32,17 +32,17 @@ If you see `command not found` or a version below 3.9, install Python:
 
 ### Step 3: Install the memo-agent plugin
 
-Open Claude Code and run these commands:
+First, install the Python dependencies (run this in your terminal):
+
+```bash
+pip install pdfplumber python-docx openpyxl
+```
+
+Then open Claude Code and run these commands:
 
 ```
 /plugin marketplace add cpflow/memo-agent
 /plugin install memo-agent@cpflow-memo-agent
-```
-
-Then install the Python dependencies (run this in your terminal):
-
-```bash
-pip install pdfplumber python-docx openpyxl
 ```
 
 ### Step 4: Create your first memo
