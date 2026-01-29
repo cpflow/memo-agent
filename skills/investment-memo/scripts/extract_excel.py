@@ -2,7 +2,7 @@
 """Extract data from Excel files using openpyxl."""
 import sys
 import os
-from openpyxl import load_workbook
+from pathlib import Path
 
 # Fix Windows encoding issues
 os.environ["PYTHONIOENCODING"] = "utf-8"
@@ -25,7 +25,32 @@ def extract(path: str, max_rows: int = 50) -> str:
     Returns:
         Extracted content as markdown tables
     """
-    wb = load_workbook(path, read_only=True, data_only=True)
+    from openpyxl import load_workbook
+
+    file_path = Path(path)
+
+    # Check if file exists
+    if not file_path.exists():
+        return f"[Error: File not found: {path}]"
+
+    # Check file extension
+    ext = file_path.suffix.lower()
+    if ext == '.xls':
+        return f"[Error: Old .xls format not supported. Please convert to .xlsx first, or use: pip install xlrd && python -c \"import xlrd; print(xlrd.open_workbook('{path}').sheet_names())\"]"
+
+    if ext not in ['.xlsx', '.xlsm', '.xltx', '.xltm']:
+        return f"[Error: Unsupported file format: {ext}. Expected .xlsx or .xlsm]"
+
+    try:
+        wb = load_workbook(path, read_only=True, data_only=True)
+    except Exception as e:
+        error_msg = str(e)
+        if "password" in error_msg.lower() or "encrypt" in error_msg.lower():
+            return f"[Error: File appears to be password-protected: {path}]"
+        elif "corrupt" in error_msg.lower() or "invalid" in error_msg.lower():
+            return f"[Error: File appears to be corrupted: {path}]"
+        else:
+            return f"[Error opening Excel file: {error_msg}]"
     output_parts = []
 
     for sheet_name in wb.sheetnames:
