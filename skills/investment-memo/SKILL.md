@@ -49,7 +49,7 @@ prompt: |
   INSTRUCTIONS:
   1. For PDFs, read in chunks of 10 pages at a time:
      ```bash
-     python scripts/extract_pdf.py "<file>" 1 10
+     python skills/investment-memo/scripts/extract_pdf.py "<file>" 1 10
      ```
      - First chunk: start=1, count=10 (pages 1-10)
      - Next chunk: start=11, count=10 (pages 11-20)
@@ -57,7 +57,7 @@ prompt: |
 
   2. For Excel:
      ```bash
-     python scripts/extract_excel.py "<file>"
+     python skills/investment-memo/scripts/extract_excel.py "<file>"
      ```
 
   3. For Word/text files use the Read tool
@@ -177,7 +177,7 @@ After each approved section:
 Once all sections are approved:
 
 ```bash
-python scripts/generate_docx.py .memo-workspace/memo.md output/[DealName]-Memo.docx
+python skills/investment-memo/scripts/generate_docx.py .memo-workspace/memo.md output/[DealName]-Memo.docx
 ```
 
 Replace `[DealName]` with the actual deal name.
