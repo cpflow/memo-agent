@@ -204,7 +204,7 @@ Always cite sources:
 
 ## Section Guidelines
 
-### Deal Summary (400-500 words)
+### Deal Summary (1500-2500 words)
 Lead with transaction terms and key metrics:
 - Transaction type (Series A/B/C, etc.)
 - Amount and valuation
@@ -212,7 +212,7 @@ Lead with transaction terms and key metrics:
 - Company positioning (one line)
 - Revenue/growth highlights
 
-### Investment Strengths (600-800 words)
+### Investment Strengths (1500-2000 words)
 3-5 key strengths with evidence:
 - Market opportunity
 - Competitive advantages / moat
@@ -220,33 +220,33 @@ Lead with transaction terms and key metrics:
 - Growth catalysts
 - Financial momentum (if positive)
 
-### Risk Factors (500-700 words)
+### Risk Factors (1500-2250 words)
 Key risks with mitigations:
 - Use "concerns" for minor issues
 - Use "risks" for major issues
 - Be balanced, not alarmist
 - Include mitigation strategies where available
 
-### Company Analysis (500-700 words)
+### Company Analysis (5000-7500 words)
 - Business model explanation
 - Products/services overview
 - Company history and milestones
 - Current market position
 
-### Market Analysis (500-700 words)
+### Market Analysis (500-1000 words)
 - TAM/SAM/SOM if available
 - Competitive landscape
 - Industry trends
 - Market timing
 
-### Financial Analysis (600-800 words)
+### Financial Analysis (1000-1500 words)
 - Historical revenue and growth
 - Profitability / burn rate
 - Projections and assumptions
 - Unit economics if available
 - Path to profitability
 
-### Management Overview (300-500 words)
+### Management Overview (400-800 words)
 - Key team members and roles
 - Relevant experience
 - Track record
